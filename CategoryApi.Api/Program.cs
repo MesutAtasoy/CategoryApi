@@ -1,23 +1,24 @@
+using CategoryApi.Api.Extensions;
 using CategoryApi.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
 builder.Services.AddApplicationModule();
 
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseExceptionHandler("/errors");
+app.UseStaticFiles();
+app.UseCustomSwagger();
+app.UseRouting();
+app.UseResponseCaching();
+app.UseEndpoints(endpoints =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.MapControllers();
+    endpoints.MapControllers();
+});
 
 app.Run();

@@ -8,5 +8,8 @@ internal sealed class CategoryEntityConfiguration : IEntityTypeConfiguration<Cat
     public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder.HasKey(x => x.Id);
+        
+        builder.HasMany(c => c.Products)
+            .WithOne(e => e.Category);
     }
 }

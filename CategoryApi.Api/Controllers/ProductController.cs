@@ -1,6 +1,5 @@
-using CategoryApi.Application.Categories.Dto;
-using CategoryApi.Application.Categories.Dto.Request;
-using CategoryApi.Application.Categories.Services;
+using CategoryApi.Application.Products.Dto;
+using CategoryApi.Application.Products.Dto.Request;
 using CategoryApi.Application.Products.Services;
 using CategoryApi.Application.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,111 +7,107 @@ using Microsoft.AspNetCore.Mvc;
 namespace CategoryApi.Api.Controllers;
 
 /// <summary>
-/// category
+/// product
 /// </summary>
-[Route("v1/categories")]
+[Route("v1/products")]
 [ApiController]
 [Produces("application/json", "application/xml")]
 [Consumes("application/json", "application/xml")]
-public class CategoryController : ControllerBase
+public class ProductController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
     private readonly IProductService _productService;
 
     /// <summary>
     /// ctor
     /// </summary>
-    /// <param name="categoryService"></param>
+    /// <param name="productService"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public CategoryController(ICategoryService categoryService, IProductService productService)
+    public ProductController(IProductService productService)
     {
-        _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         _productService = productService ?? throw new ArgumentNullException(nameof(productService));
     }
+    
+    // /// <summary>
+    // /// Get products by category id
+    // /// </summary>
+    // /// <response code="200">The products were found</response>
+    // /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
+    // /// <response code="415">When a response is specified in an unsupported content type</response>
+    // /// <response code="422">If query params structure is valid, but the values fail validation</response>
+    // /// <response code="500">A server fault occurred</response>
+    // [HttpGet("{categoryId}", Name = nameof(GetProducts))]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    // [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+    // [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    // public async Task<ActionResult<ProductDto>> GetProducts([FromRoute] long categoryId, [FromQuery]PaginationFilter filter)
+    // {
+    //     var result  = await _productService.GetAsync(categoryId, filter).ConfigureAwait(true);
+    //
+    //     return Ok(result);
+    // }
 
     /// <summary>
-    /// Get products by category id
+    /// Get a single product by product id
     /// </summary>
-    /// <response code="200">The category was found</response>
-    /// <response code="404">The category was not found</response>
+    /// <response code="200">The product was found</response>
+    /// <response code="404">The product was not found</response>
     /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
     /// <response code="415">When a response is specified in an unsupported content type</response>
     /// <response code="422">If query params structure is valid, but the values fail validation</response>
     /// <response code="500">A server fault occurred</response>
-    [HttpGet("{categoryId}/products", Name = nameof(GetCategoryProducts))]
+    [HttpGet("{productId}", Name = nameof(GetProductById))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CategoryDto>> GetCategoryProducts([FromRoute] long categoryId,
-        [FromQuery] PaginationFilter filter)
+    public async Task<ActionResult<ProductDto>> GetProductById([FromRoute] long productId)
     {
-        var result = await _productService.GetAsync(categoryId, filter).ConfigureAwait(true);
-        return Ok(result);
-    }
+        var product = await _productService.GetByIdAsync(productId).ConfigureAwait(true);
 
-    /// <summary>
-    /// Get a single category by category id
-    /// </summary>
-    /// <response code="200">The category was found</response>
-    /// <response code="404">The category was not found</response>
-    /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
-    /// <response code="415">When a response is specified in an unsupported content type</response>
-    /// <response code="422">If query params structure is valid, but the values fail validation</response>
-    /// <response code="500">A server fault occurred</response>
-    [HttpGet("{categoryId}", Name = nameof(GetCategoryById))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CategoryDto>> GetCategoryById([FromRoute] long categoryId)
-    {
-        var category = await _categoryService.GetByIdAsync(categoryId).ConfigureAwait(true);
-
-        if (category == null)
+        if (product == null)
             return NotFound();
 
-        return Ok(category);
+        return Ok(product);
     }
 
 
     /// <summary>
-    /// Create a new category
+    /// Create a new product
     /// </summary>
-    /// <response code="201">The category was created successfully. Also includes 'location' header to newly created category</response>
+    /// <response code="201">The product was created successfully. Also includes 'location' header to newly created product</response>
     /// <response code="400">The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications</response>
     /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
     /// <response code="415">When a response is specified in an unsupported content type</response>
     /// <response code="422">If query params structure is valid, but the values fail validation</response>
     /// <response code="500">A server fault occurred</response>
-    [HttpPost(Name = nameof(CreateCategory))]
+    [HttpPost(Name = nameof(CreateProduct))]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto category)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto product)
     {
-        var createdCategory = await _categoryService.CreateAsync(category).ConfigureAwait(true);
+        var createdProduct = await _productService.CreateAsync(product).ConfigureAwait(true);
 
-        return CreatedAtAction(actionName: nameof(GetCategoryById),
-            routeValues: new { categoryId = createdCategory.Id }, value: createdCategory);
+        return CreatedAtAction(actionName: nameof(GetProductById),
+            routeValues: new { productId = createdProduct.Id }, value: createdProduct);
     }
 
     /// <summary>
-    /// Update an existing category
+    /// Update an existing product
     /// </summary>
-    /// <response code="204">The category was updated successfully</response>
+    /// <response code="204">The product was updated successfully</response>
     /// <response code="400">The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications</response>
     /// <response code="404">The user was not found for specified user id</response>
     /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
     /// <response code="415">When a response is specified in an unsupported content type</response>
     /// <response code="422">If query params structure is valid, but the values fail validation</response>
     /// <response code="500">A server fault occurred</response>
-    [HttpPut("{categoryId}", Name = nameof(UpdateCategory))]
+    [HttpPut("{productId}", Name = nameof(UpdateProduct))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -120,32 +115,32 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateCategory([FromRoute] long categoryId, [FromBody] UpdateCategoryDto category)
+    public async Task<IActionResult> UpdateProduct([FromRoute] long productId, [FromBody] UpdateProductDto product)
     {
-        await _categoryService.UpdateAsync(categoryId, category).ConfigureAwait(true);
+        await _productService.UpdateAsync(productId, product).ConfigureAwait(true);
         return NoContent();
     }
 
 
     /// <summary>
-    /// Delete category
+    /// Delete product
     /// </summary>
-    /// <response code="204">The category was deleted successfully.</response>
-    /// <response code="404">A category having specified user id was not found</response>
+    /// <response code="204">The product was deleted successfully.</response>
+    /// <response code="404">A product having specified user id was not found</response>
     /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
     /// <response code="415">When a response is specified in an unsupported content type</response>
     /// <response code="422">If query params structure is valid, but the values fail validation</response>
     /// <response code="500">A server fault occurred</response>
-    [HttpDelete("{categoryId}", Name = nameof(DeleteCategory))]
+    [HttpDelete("{productId}", Name = nameof(DeleteProduct))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteCategory([FromRoute] long categoryId)
+    public async Task<IActionResult> DeleteProduct([FromRoute] long productId)
     {
-        await _categoryService.DeleteAsync(categoryId).ConfigureAwait(true);
+        await _productService.DeleteAsync(productId).ConfigureAwait(true);
         return NoContent();
     }
 }

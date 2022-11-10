@@ -2,13 +2,12 @@
 using CategoryApi.Application.Categories.Dto;
 using CategoryApi.Domain.Entities;
 
-namespace CategoryApi.Application.Categories
+namespace CategoryApi.Application.Categories;
+
+internal class CategoryMappingProfile : Profile
 {
-    internal class CategoryMappingProfile : Profile
+    public CategoryMappingProfile()
     {
-        public CategoryMappingProfile()
-        {
-            CreateMap<Category, CategoryDto>();
-        }
+        CreateMap<Category, CategoryDto>();
     }
 }
