@@ -20,6 +20,7 @@ public static class ApplicationModule
         serviceCollection.AddScoped<IProductService, ProductService>();
 
         serviceCollection.AddDbContext<CategoryApiDbContext>(options => { options.UseInMemoryDatabase("db"); });
+        
 
         return serviceCollection;
     }
