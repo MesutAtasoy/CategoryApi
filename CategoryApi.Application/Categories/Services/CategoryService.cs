@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CategoryApi.Application.Categories.Dto;
 using CategoryApi.Application.Categories.Dto.Request;
 using CategoryApi.Domain.Entities;
@@ -16,6 +17,14 @@ public class CategoryService : ICategoryService
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    }
+
+    public async Task<List<CategoryDto>> GetAsync()
+    {
+        // ToDo : It can be with pagination
+        return await _dbContext.Categories
+            .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+            .ToListAsync(); 
     }
 
     public async Task<CategoryDto> CreateAsync(CreateCategoryDto category)

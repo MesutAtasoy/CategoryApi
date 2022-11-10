@@ -1,6 +1,7 @@
 using CategoryApi.Application.Categories.Dto;
 using CategoryApi.Application.Categories.Dto.Request;
 using CategoryApi.Application.Categories.Services;
+using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Services;
 using CategoryApi.Application.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,26 @@ public class CategoryController : ControllerBase
         _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
         _productService = productService ?? throw new ArgumentNullException(nameof(productService));
     }
+    
+    /// <summary>
+    /// Get categories
+    /// </summary>
+    /// <response code="200">The categories were found</response>
+    /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
+    /// <response code="415">When a response is specified in an unsupported content type</response>
+    /// <response code="422">If query params structure is valid, but the values fail validation</response>
+    /// <response code="500">A server fault occurred</response>
+    [HttpGet(Name = nameof(GetCategories))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
+    {
+        var result = await _categoryService.GetAsync().ConfigureAwait(true);
+        return Ok(result);
+    }
 
     /// <summary>
     /// Get products by category id
@@ -45,7 +66,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CategoryDto>> GetCategoryProducts([FromRoute] long categoryId,
+    public async Task<ActionResult<PagedList<ProductDto>>> GetCategoryProducts([FromRoute] long categoryId,
         [FromQuery] PaginationFilter filter)
     {
         var result = await _productService.GetAsync(categoryId, filter).ConfigureAwait(true);
