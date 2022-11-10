@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Dto.Request;
+using CategoryApi.Application.Shared.Exceptions;
 using CategoryApi.Application.Shared.Extensions;
 using CategoryApi.Application.Shared.Models;
 using CategoryApi.Domain.Entities;
@@ -46,7 +47,7 @@ public class ProductService : IProductService
     {
         var product = await _dbContext.Products.FirstOrDefaultAsync(c => c.Id == productId);
         if (product is null)
-            throw new ArgumentException($"Product is not found"); // ToDo : Create new exception type
+            throw new ItemNotFoundException($"Product is not found");
 
         return _mapper.Map<ProductDto>(product);
     }
@@ -55,7 +56,7 @@ public class ProductService : IProductService
     {
         var updatedProduct = await _dbContext.Products.FirstOrDefaultAsync(c => c.Id == productId);
         if (updatedProduct is null)
-            throw new ArgumentException($"Product is not found"); // ToDo : Create new exception type
+            throw new ItemNotFoundException($"Product is not found");
 
         updatedProduct.Name = product.Name;
         updatedProduct.Code = product.Code;
@@ -70,9 +71,8 @@ public class ProductService : IProductService
     {
         var product = await _dbContext.Products.FirstOrDefaultAsync(c => c.Id == productId);
         if (product is null)
-            throw new ArgumentException($"Product is not found"); // ToDo : Create new exception type
-
-
+            throw new ItemNotFoundException($"Product is not found");
+        
         _dbContext.Products.Remove(product);
 
         await _dbContext.SaveChangesAsync();

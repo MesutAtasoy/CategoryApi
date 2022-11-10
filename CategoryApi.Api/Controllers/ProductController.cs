@@ -2,6 +2,7 @@ using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Dto.Request;
 using CategoryApi.Application.Products.Services;
 using CategoryApi.Application.Shared.Models;
+using Framework.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CategoryApi.Api.Controllers;
@@ -27,26 +28,6 @@ public class ProductController : ControllerBase
         _productService = productService ?? throw new ArgumentNullException(nameof(productService));
     }
     
-    // /// <summary>
-    // /// Get products by category id
-    // /// </summary>
-    // /// <response code="200">The products were found</response>
-    // /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
-    // /// <response code="415">When a response is specified in an unsupported content type</response>
-    // /// <response code="422">If query params structure is valid, but the values fail validation</response>
-    // /// <response code="500">A server fault occurred</response>
-    // [HttpGet("{categoryId}", Name = nameof(GetProducts))]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    // [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    // [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    // public async Task<ActionResult<ProductDto>> GetProducts([FromRoute] long categoryId, [FromQuery]PaginationFilter filter)
-    // {
-    //     var result  = await _productService.GetAsync(categoryId, filter).ConfigureAwait(true);
-    //
-    //     return Ok(result);
-    // }
-
     /// <summary>
     /// Get a single product by product id
     /// </summary>
@@ -58,10 +39,10 @@ public class ProductController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpGet("{productId}", Name = nameof(GetProductById))]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProductDto>> GetProductById([FromRoute] long productId)
     {
         var product = await _productService.GetByIdAsync(productId).ConfigureAwait(true);
@@ -84,11 +65,11 @@ public class ProductController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpPost(Name = nameof(CreateProduct))]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto product)
     {
         var createdProduct = await _productService.CreateAsync(product).ConfigureAwait(true);
@@ -109,12 +90,12 @@ public class ProductController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpPut("{productId}", Name = nameof(UpdateProduct))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateProduct([FromRoute] long productId, [FromBody] UpdateProductDto product)
     {
         await _productService.UpdateAsync(productId, product).ConfigureAwait(true);
@@ -133,11 +114,11 @@ public class ProductController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpDelete("{productId}", Name = nameof(DeleteProduct))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteProduct([FromRoute] long productId)
     {
         await _productService.DeleteAsync(productId).ConfigureAwait(true);

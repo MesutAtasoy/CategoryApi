@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using CategoryApi.Application.Categories.Dto;
 using CategoryApi.Application.Categories.Dto.Request;
+using CategoryApi.Application.Shared.Exceptions;
 using CategoryApi.Domain.Entities;
 using CategoryApi.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,7 @@ public class CategoryService : ICategoryService
     {
         var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
         if (category is null)
-            throw new ArgumentException($"Category is not found"); // ToDo : Create new exception type
+            throw new ItemNotFoundException($"Category is not found");
 
 
         return _mapper.Map<CategoryDto>(category);
@@ -55,7 +56,7 @@ public class CategoryService : ICategoryService
     {
         var updatedCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
         if (updatedCategory is null)
-            throw new ArgumentException($"Category is not found"); // ToDo : Create new exception type
+            throw new ItemNotFoundException($"Category is not found");
 
         updatedCategory.Name = category.Name;
 
@@ -68,8 +69,7 @@ public class CategoryService : ICategoryService
     {
         var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
         if (category is null)
-            throw new ArgumentException($"Category is not found"); // ToDo : Create new exception type
-
+            throw new ItemNotFoundException($"Category is not found");
 
         _dbContext.Categories.Remove(category);
 

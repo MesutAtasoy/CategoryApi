@@ -1,5 +1,6 @@
 using CategoryApi.Api.Extensions;
 using CategoryApi.Application;
+using Framework;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ app.UseStaticFiles();
 app.UseCustomSwagger();
 app.UseRouting();
 app.UseResponseCaching();
+app.UseErrorMiddleware();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\CategoryApi.Infrastructure\CategoryApi.Infrastructure.csproj" />
+	  <ProjectReference Include="..\Framework\Framework.csproj" />
 	</ItemGroup>
 
 </Project>

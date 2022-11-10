@@ -4,6 +4,7 @@ using CategoryApi.Application.Categories.Services;
 using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Services;
 using CategoryApi.Application.Shared.Models;
+using Framework.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CategoryApi.Api.Controllers;
@@ -41,10 +42,10 @@ public class CategoryController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpGet(Name = nameof(GetCategories))]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<List<CategoryDto>>> GetCategories()
     {
         var result = await _categoryService.GetAsync().ConfigureAwait(true);
@@ -62,10 +63,10 @@ public class CategoryController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpGet("{categoryId}/products", Name = nameof(GetCategoryProducts))]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<PagedList<ProductDto>>> GetCategoryProducts([FromRoute] long categoryId,
         [FromQuery] PaginationFilter filter)
     {
@@ -84,10 +85,10 @@ public class CategoryController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpGet("{categoryId}", Name = nameof(GetCategoryById))]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CategoryDto>> GetCategoryById([FromRoute] long categoryId)
     {
         var category = await _categoryService.GetByIdAsync(categoryId).ConfigureAwait(true);
@@ -110,11 +111,11 @@ public class CategoryController : ControllerBase
     /// <response code="500">A server fault occurred</response>
     [HttpPost(Name = nameof(CreateCategory))]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto category)
     {
         var createdCategory = await _categoryService.CreateAsync(category).ConfigureAwait(true);

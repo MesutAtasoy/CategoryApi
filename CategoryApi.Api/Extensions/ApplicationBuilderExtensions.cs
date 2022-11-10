@@ -1,3 +1,4 @@
+
 namespace CategoryApi.Api.Extensions;
 
 internal  static class ApplicationBuilderExtensions
@@ -15,5 +16,5 @@ internal  static class ApplicationBuilderExtensions
             setup.EnableDeepLinking();
         });
         return app;
-    } 
+    }
 }
