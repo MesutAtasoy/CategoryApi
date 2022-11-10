@@ -1,5 +1,4 @@
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+using Framework.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
@@ -8,35 +7,29 @@ namespace Framework;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection ConfigureSwagger(this IServiceCollection services,
-        string applicationName)
+        Action<SwaggerOptions> swaggerOptions)
     {
+        var options = new SwaggerOptions();
+
+        swaggerOptions.Invoke(options);
+
+        if (string.IsNullOrEmpty(options.Title))
+            throw new ArgumentNullException(nameof(options.Title));
+
+
         return services.AddSwaggerGen(setup =>
         {
             setup.SwaggerDoc(
                 "v1",
                 new OpenApiInfo
                 {
-                    Title = applicationName,
-                    Version = "v1",
-                    Description = "An example API",
-                    TermsOfService = new Uri("http://example.com/terms"),
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Developer",
-                        Email = "developer@example.com"
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "Apache 2.0",
-                        Url = new Uri("http://www.apache.org/licenses/LICENSE-2.0.html")
-                    }
+                    Title = options.Title,
+                    Version = options.Version ?? "v1",
+                    Description =  options.Description
                 });
-
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, options.XmlFile);
             setup.EnableAnnotations();
-            // setup.IncludeXmlComments(xmlPath); // ToDo : Check one.
+            setup.IncludeXmlComments(xmlPath);
         });
     }
-
 }

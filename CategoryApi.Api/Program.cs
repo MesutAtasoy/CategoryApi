@@ -1,3 +1,4 @@
+using System.Reflection;
 using CategoryApi.Application;
 using Framework;
 
@@ -7,7 +8,12 @@ builder.Services.AddControllers()
     .AddCustomFluentValidation(typeof(ApplicationModule).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.ConfigureSwagger("Category Api v1");
+builder.Services.ConfigureSwagger(x =>
+{
+    x.Title = "Category API v1";
+    x.Description = "An example of API with net6.0";
+    x.XmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+});
 builder.Services.AddApplicationModule();
 
 
