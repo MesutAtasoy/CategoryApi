@@ -1,7 +1,6 @@
 using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Dto.Request;
 using CategoryApi.Application.Products.Services;
-using CategoryApi.Application.Shared.Models;
 using Framework.Models;
 using Microsoft.AspNetCore.Mvc;
 

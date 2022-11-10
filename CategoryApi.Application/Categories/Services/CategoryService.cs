@@ -67,12 +67,20 @@ public class CategoryService : ICategoryService
 
     public async Task DeleteAsync(long categoryId)
     {
-        var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+        var category = await _dbContext.Categories
+            .Include(x=>x.Products)
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
+        
         if (category is null)
             throw new ItemNotFoundException($"Category is not found");
 
         _dbContext.Categories.Remove(category);
 
+        if (category.Products.Any())
+        {
+            _dbContext.Products.RemoveRange(category.Products);
+        }
+        
         await _dbContext.SaveChangesAsync();
     }
 }

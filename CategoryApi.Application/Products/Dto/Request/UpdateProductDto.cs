@@ -2,7 +2,6 @@
 
 public class UpdateProductDto
 {
-    public long CategoryId { get; set; }
     public string Name { get; set; }
     public string Code { get; set; }
 }

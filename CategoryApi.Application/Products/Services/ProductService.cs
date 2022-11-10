@@ -34,6 +34,10 @@ public class ProductService : IProductService
         if (product is null)
             throw new ArgumentNullException(nameof(product));
 
+        var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == product.CategoryId);
+        if (category is null)
+            throw new ItemNotFoundException("The category is not found");
+
         var newProduct = new Product { Name = product.Name, CategoryId = product.CategoryId, Code = product.Code };
 
         await _dbContext.Products.AddAsync(newProduct);
@@ -57,10 +61,9 @@ public class ProductService : IProductService
         var updatedProduct = await _dbContext.Products.FirstOrDefaultAsync(c => c.Id == productId);
         if (updatedProduct is null)
             throw new ItemNotFoundException($"Product is not found");
-
+        
         updatedProduct.Name = product.Name;
         updatedProduct.Code = product.Code;
-        updatedProduct.CategoryId = product.CategoryId;
         
         await _dbContext.SaveChangesAsync();
 
