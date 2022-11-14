@@ -11,11 +11,10 @@ public static class ServiceCollectionExtensions
     {
         var options = new SwaggerOptions();
 
-        swaggerOptions.Invoke(options);
+        swaggerOptions?.Invoke(options);
 
         if (string.IsNullOrEmpty(options.Title))
             throw new ArgumentNullException(nameof(options.Title));
-
 
         return services.AddSwaggerGen(setup =>
         {

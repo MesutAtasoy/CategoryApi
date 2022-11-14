@@ -13,6 +13,11 @@ public static class ApplicationBuilderExtensions
     
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, string applicationName)
     {
+        if (string.IsNullOrEmpty(applicationName))
+        {
+            throw new ArgumentNullException(nameof(applicationName));
+        }
+
         app.UseSwagger();
         app.UseSwaggerUI(setup =>
         {
@@ -23,6 +28,7 @@ public static class ApplicationBuilderExtensions
             setup.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
             setup.EnableDeepLinking();
         });
+
         return app;
     }
 }

@@ -47,17 +47,6 @@ public class ErrorHandlingMiddleware
                 response.StatusCode = ex.StatusCode;
                 errorResponse.Message = ex.Message;
                 break;
-            case ApplicationException ex:
-                if (ex.Message.Contains("Invalid Token"))
-                {
-                    response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    errorResponse.Message = ex.Message;
-                    break;
-                }
-
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                errorResponse.Message = ex.Message;
-                break;
             default:
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 errorResponse.Message = "Internal server error!";

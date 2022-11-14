@@ -25,6 +25,7 @@ public class CategoryController : ControllerBase
     /// ctor
     /// </summary>
     /// <param name="categoryService"></param>
+    /// <param name="productService"></param>
     /// <exception cref="ArgumentNullException"></exception>
     public CategoryController(ICategoryService categoryService, IProductService productService)
     {
