@@ -15,16 +15,16 @@ namespace CategoryApi.Api.Controllers;
 [Consumes("application/json", "application/xml")]
 public class ProductController : ControllerBase
 {
-    private readonly IProductService _productService;
+    private readonly IProductRepository _productRepository;
 
     /// <summary>
     /// ctor
     /// </summary>
-    /// <param name="productService"></param>
+    /// <param name="productRepository"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public ProductController(IProductService productService)
+    public ProductController(IProductRepository productRepository)
     {
-        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     }
     
     /// <summary>
@@ -44,7 +44,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProductDto>> GetProductById([FromRoute] long productId)
     {
-        var product = await _productService.GetByIdAsync(productId).ConfigureAwait(true);
+        var product = await _productRepository.GetByIdAsync(productId).ConfigureAwait(true);
 
         if (product == null)
             return NotFound();
@@ -71,7 +71,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto product)
     {
-        var createdProduct = await _productService.CreateAsync(product).ConfigureAwait(true);
+        var createdProduct = await _productRepository.CreateAsync(product).ConfigureAwait(true);
 
         return CreatedAtAction(actionName: nameof(GetProductById),
             routeValues: new { productId = createdProduct.Id }, value: createdProduct);
@@ -97,7 +97,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateProduct([FromRoute] long productId, [FromBody] UpdateProductDto product)
     {
-        await _productService.UpdateAsync(productId, product).ConfigureAwait(true);
+        await _productRepository.UpdateAsync(productId, product).ConfigureAwait(true);
         return NoContent();
     }
 
@@ -120,7 +120,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteProduct([FromRoute] long productId)
     {
-        await _productService.DeleteAsync(productId).ConfigureAwait(true);
+        await _productRepository.DeleteAsync(productId).ConfigureAwait(true);
         return NoContent();
     }
 }

@@ -3,7 +3,6 @@ using CategoryApi.Application.Categories.Dto.Request;
 using CategoryApi.Application.Categories.Services;
 using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Services;
-using CategoryApi.Application.Shared.Models;
 using Framework.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,19 +17,19 @@ namespace CategoryApi.Api.Controllers;
 [Consumes("application/json", "application/xml")]
 public class CategoryController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
-    private readonly IProductService _productService;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IProductRepository _productRepository;
 
     /// <summary>
     /// ctor
     /// </summary>
-    /// <param name="categoryService"></param>
-    /// <param name="productService"></param>
+    /// <param name="categoryRepository"></param>
+    /// <param name="productRepository"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public CategoryController(ICategoryService categoryService, IProductService productService)
+    public CategoryController(ICategoryRepository categoryRepository, IProductRepository productRepository)
     {
-        _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
-        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+        _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     }
     
     /// <summary>
@@ -49,7 +48,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<List<CategoryDto>>> GetCategories()
     {
-        var result = await _categoryService.GetAsync().ConfigureAwait(true);
+        var result = await _categoryRepository.GetAsync().ConfigureAwait(true);
         return Ok(result);
     }
 
@@ -68,10 +67,9 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status415UnsupportedMediaType)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<PagedList<ProductDto>>> GetCategoryProducts([FromRoute] long categoryId,
-        [FromQuery] PaginationFilter filter)
+    public async Task<ActionResult<List<ProductDto>>> GetCategoryProducts([FromRoute] long categoryId)
     {
-        var result = await _productService.GetAsync(categoryId, filter).ConfigureAwait(true);
+        var result = await _productRepository.GetAsync(categoryId).ConfigureAwait(true);
         return Ok(result);
     }
 
@@ -92,7 +90,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CategoryDto>> GetCategoryById([FromRoute] long categoryId)
     {
-        var category = await _categoryService.GetByIdAsync(categoryId).ConfigureAwait(true);
+        var category = await _categoryRepository.GetByIdAsync(categoryId).ConfigureAwait(true);
 
         if (category == null)
             return NotFound();
@@ -119,7 +117,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto category)
     {
-        var createdCategory = await _categoryService.CreateAsync(category).ConfigureAwait(true);
+        var createdCategory = await _categoryRepository.CreateAsync(category).ConfigureAwait(true);
 
         return CreatedAtAction(actionName: nameof(GetCategoryById),
             routeValues: new { categoryId = createdCategory.Id }, value: createdCategory);
@@ -145,7 +143,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateCategory([FromRoute] long categoryId, [FromBody] UpdateCategoryDto category)
     {
-        await _categoryService.UpdateAsync(categoryId, category).ConfigureAwait(true);
+        await _categoryRepository.UpdateAsync(categoryId, category).ConfigureAwait(true);
         return NoContent();
     }
 
@@ -168,7 +166,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteCategory([FromRoute] long categoryId)
     {
-        await _categoryService.DeleteAsync(categoryId).ConfigureAwait(true);
+        await _categoryRepository.DeleteAsync(categoryId).ConfigureAwait(true);
         return NoContent();
     }
 }

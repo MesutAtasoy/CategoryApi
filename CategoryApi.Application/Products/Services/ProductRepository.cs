@@ -1,32 +1,32 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using CategoryApi.Application.Products.Dto;
+﻿using CategoryApi.Application.Products.Dto;
 using CategoryApi.Application.Products.Dto.Request;
 using CategoryApi.Application.Shared.Exceptions;
-using CategoryApi.Application.Shared.Extensions;
-using CategoryApi.Application.Shared.Models;
 using CategoryApi.Domain.Entities;
 using CategoryApi.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace CategoryApi.Application.Products.Services;
 
-public class ProductService : IProductService
+public class ProductRepository : IProductRepository
 {
     private readonly CategoryApiDbContext _dbContext;
-    private readonly IMapper _mapper;
 
-    public ProductService(CategoryApiDbContext dbContext, IMapper mapper)
+    public ProductRepository(CategoryApiDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<PagedList<ProductDto>> GetAsync(long categoryId, PaginationFilter filter)
+    public async Task<List<ProductDto>> GetAsync(long categoryId)
     {
         return await _dbContext.Products.Where(x => x.CategoryId == categoryId)
-            .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
-            .ToPagedListAsync(filter);
+            .Select(x=> new ProductDto
+            {
+                Id = x.Id,
+                CategoryId = x.CategoryId,
+                Code = x.Code,
+                Name = x.Name
+            })
+            .ToListAsync();
     }
 
     public async Task<ProductDto> CreateAsync(CreateProductDto product)
@@ -44,7 +44,13 @@ public class ProductService : IProductService
 
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<ProductDto>(newProduct);
+        return new ProductDto
+        {
+            Id = newProduct.Id,
+            CategoryId = newProduct.CategoryId,
+            Code = newProduct.Code,
+            Name = newProduct.Name
+        };
     }
 
     public async Task<ProductDto> GetByIdAsync(long productId)
@@ -53,7 +59,13 @@ public class ProductService : IProductService
         if (product is null)
             throw new ItemNotFoundException($"Product is not found");
 
-        return _mapper.Map<ProductDto>(product);
+        return new ProductDto
+        {
+            Id = product.Id,
+            CategoryId = product.CategoryId,
+            Code = product.Code,
+            Name = product.Name
+        };
     }
 
     public async Task<ProductDto> UpdateAsync(long productId, UpdateProductDto product)
@@ -67,7 +79,13 @@ public class ProductService : IProductService
         
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<ProductDto>(updatedProduct);
+        return new ProductDto
+        {
+            Id = updatedProduct.Id,
+            CategoryId = updatedProduct.CategoryId,
+            Code = updatedProduct.Code,
+            Name = updatedProduct.Name
+        };
     }
 
     public async Task DeleteAsync(long productId)

@@ -26,6 +26,7 @@ public class ErrorHandlingMiddleware
     {
         try
         {
+            
             await _next(httpContext);
         }
         catch (Exception ex)
